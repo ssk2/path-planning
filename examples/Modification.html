@@ -73,8 +73,18 @@ function addLatLng(event) {
   });
   
   markers.push(marker);
+
+  var latitude = marker.position.b;
+  var longitude = marker.position.d;
+  var elevation = -100;
+  var waypoint = { 
+    "latitude" : latitude,
+    "longitude" : longitude,
+    "altitude" : elevation
+  }
+
   points = document.getElementById("points");
-  new_points = points.innerHTML + "<br />" + event.latLng;
+  new_points = points.innerHTML + "<br />" + JSON.stringify(waypoint);
   points.innerHTML = new_points;
 }
 
@@ -113,6 +123,8 @@ google.maps.event.addDomListener(window, 'load', initialize);
     </script>
   </head>
   <body>
+    <div id="points">
+    </div>
     <div id="panel">
       <input onclick="clearMarkers();" type=button value="Hide Markers">
       <input onclick="showMarkers();" type=button value="Show All Markers">
