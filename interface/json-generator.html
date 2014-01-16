@@ -41,25 +41,13 @@ function initialize() {
   poly.setMap(map);
 
   // Add a listener for the click event
-  google.maps.event.addListener(map, 'click', addLatLng);
-  // google.maps.event.addListener(map, 'click',function(event) {
-  //  addMarker(event.latLng);
-  //});
-
-  // Add a marker to the map and push to the array.
-  function addMarker(location) {
-    var marker = new google.maps.Marker({
-      position: location,
-      map: map
-    });
-    markers.push(marker);
-  }
+  google.maps.event.addListener(map, 'click', addMarker);
 
   /**
    * Handles click events on a map, and adds a new point to the Polyline.
    * @param {google.maps.MouseEvent} event
    */
-  function addLatLng(event) {
+  function addMarker(event) {
 
     var path = poly.getPath();
 
@@ -67,11 +55,15 @@ function initialize() {
     // and it will automatically appear.
     path.push(event.latLng);
 
+
+    image = 'http://google-maps-icons.googlecode.com/files/aircraft-small.png';
+
     // Add a new marker at the new plotted point on the polyline.
     var marker = new google.maps.Marker({
       position: event.latLng,
       title: '#' + path.getLength(),
-      map: map
+      map: map,
+      icon: image
     });
     
     markers.push(marker);
@@ -91,11 +83,11 @@ function initialize() {
 }
 
 
-function buildWaypoint (latitude, longitude, altitude) {
+function buildWaypoint (latitude, longitude, elevation) {
     var waypoint = { 
       "latitude" : latitude,
       "longitude" : longitude,
-      "altitude" : -1
+      "elevation" : -1
     }
 
     return waypoint;
@@ -126,22 +118,22 @@ function deleteMarkers() {
   clearJSON;
 }
 
+function buildJSON() {
+    return JSON.stringify(waypoints);
+}
+
 function showJSON() {
     points = document.getElementById("points");
     points.innerHTML = buildJSON();
 }
 
-function buildJSON() {
-    return JSON.stringify(waypoints);
-}
-
-function exportJSON() {
-   window.open('data:text/json;charset=utf-8,' + escape(buildJSON()));
-}
-
 function clearJSON() {
   points = document.getElementById("points");
   points.innerHTML = "";
+}
+
+function exportJSON() {
+   window.open('data:application/JSON;charset=utf-8,' + buildJSON());
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
@@ -156,8 +148,8 @@ google.maps.event.addDomListener(window, 'load', initialize);
       <input onclick="showMarkers();" type=button value="Show All Markers" />
       <input onclick="deleteMarkers();" type=button value="Delete Markers" />
       <input onclick="showJSON();" type=button value="Show JSON" />
-      <input onclick="exportJSON();" type=button value="Export JSON" />
       <input onclick="clearJSON();" type=button value="Clear JSON" />
+      <input onclick="exportJSON();" type=button value="Export JSON" />
     </div>
     <div id="map-canvas"></div>
     <p>Click on the map to add markers.</p>
