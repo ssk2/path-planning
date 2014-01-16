@@ -76,7 +76,7 @@ function initialize() {
 
     elevationService.getElevationForLocations(positionalRequest, function(results, status) {
       if (status == google.maps.ElevationStatus.OK && results[0]) {
-          waypoints[poly.getPath().length - 1].altitude = results[0].elevation;
+          waypoints[poly.getPath().length - 1].elevation = results[0].elevation;
       }
     });
   } 
