@@ -44,49 +44,51 @@ function initialize() {
   //  addMarker(event.latLng);
   //});
 
-
-// Add a marker to the map and push to the array.
-function addMarker(location) {
-  var marker = new google.maps.Marker({
-    position: location,
-    map: map
-  });
-  markers.push(marker);
-}
-/**
- * Handles click events on a map, and adds a new point to the Polyline.
- * @param {google.maps.MouseEvent} event
- */
-function addLatLng(event) {
-
-  var path = poly.getPath();
-
-  // Because path is an MVCArray, we can simply append a new coordinate
-  // and it will automatically appear.
-  path.push(event.latLng);
-
-  // Add a new marker at the new plotted point on the polyline.
-  var marker = new google.maps.Marker({
-    position: event.latLng,
-    title: '#' + path.getLength(),
-    map: map
-  });
-  
-  markers.push(marker);
-
-  var latitude = marker.position.b;
-  var longitude = marker.position.d;
-  var elevation = -100;
-  var waypoint = { 
-    "latitude" : latitude,
-    "longitude" : longitude,
-    "altitude" : elevation
+  // Add a marker to the map and push to the array.
+  function addMarker(location) {
+    var marker = new google.maps.Marker({
+      position: location,
+      map: map
+    });
+    markers.push(marker);
   }
 
-  points = document.getElementById("points");
-  new_points = points.innerHTML + "<br />" + JSON.stringify(waypoint);
-  points.innerHTML = new_points;
+  /**
+   * Handles click events on a map, and adds a new point to the Polyline.
+   * @param {google.maps.MouseEvent} event
+   */
+  function addLatLng(event) {
+
+    var path = poly.getPath();
+
+    // Because path is an MVCArray, we can simply append a new coordinate
+    // and it will automatically appear.
+    path.push(event.latLng);
+
+    // Add a new marker at the new plotted point on the polyline.
+    var marker = new google.maps.Marker({
+      position: event.latLng,
+      title: '#' + path.getLength(),
+      map: map
+    });
+    
+    markers.push(marker);
+
+    var latitude = marker.position.b;
+    var longitude = marker.position.d;
+    var elevation = -100;
+    var waypoint = { 
+      "latitude" : latitude,
+      "longitude" : longitude,
+      "altitude" : elevation
+    }
+
+    points = document.getElementById("points");
+    new_points = points.innerHTML + "<br />" + JSON.stringify(waypoint);
+    points.innerHTML = new_points;
+  } 
 }
+
 
 // Sets the map on all markers in the array.
 function setAllMap(map) {
@@ -110,14 +112,10 @@ function showMarkers() {
 function deleteMarkers() {
   clearMarkers();
   markers = [];
-}
-
-
   points = document.getElementById("points");
-  new_points = points.innerHTML + "<br />" + event.latLng;
-  points.innerHTML = new_points;
-  
+  points.innerHTML = "";
 }
+
 google.maps.event.addDomListener(window, 'load', initialize);
 
     </script>
