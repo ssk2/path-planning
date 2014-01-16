@@ -20,6 +20,7 @@
 var poly;
 var map;
 var markers = [];
+var elevationService = new google.maps.ElevationService();
 
 function initialize() {
   var mapOptions = {
@@ -74,9 +75,10 @@ function initialize() {
     
     markers.push(marker);
 
+    var markerNumber = path.length;
     var latitude = marker.position.b;
     var longitude = marker.position.d;
-    var elevation = -100;
+    var elevation = '<div id=elevation' + markerNumber + '"</div>';
     var waypoint = { 
       "latitude" : latitude,
       "longitude" : longitude,
@@ -86,6 +88,21 @@ function initialize() {
     points = document.getElementById("points");
     new_points = points.innerHTML + "<br />" + JSON.stringify(waypoint);
     points.innerHTML = new_points;
+
+    // locations = [];
+    // locations.push(event.latLng);
+
+    var positionalRequest = {
+      'locations': [event.latLng]
+    }
+
+    elevationService.getElevationForLocations(positionalRequest, function(results, status) {
+      if (status == google.maps.ElevationStatus.OK && results[0]) {
+          elevation = document.getElementById("elevation" + poly.getPath().length);
+          elevation.innerHTML = results[0].elevation;
+      }
+    });
+
   } 
 }
 
