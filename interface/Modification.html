@@ -20,6 +20,7 @@
 var poly;
 var map;
 var markers = [];
+var waypoints = [];
 var elevationService = new google.maps.ElevationService();
 
 function initialize() {
@@ -74,23 +75,8 @@ function initialize() {
     });
     
     markers.push(marker);
-
-    var markerNumber = path.length;
-    var latitude = marker.position.d;
-    var longitude = marker.position.e;
-    var elevation = '<div id=elevation' + markerNumber + '"</div>';
-    var waypoint = { 
-      "latitude" : latitude,
-      "longitude" : longitude,
-      "altitude" : elevation
-    }
-
-    points = document.getElementById("points");
-    new_points = points.innerHTML + "<br />" + JSON.stringify(waypoint);
-    points.innerHTML = new_points;
-
-    // locations = [];
-    // locations.push(event.latLng);
+    waypoint = buildWaypoint(marker.position.d, marker.position.e, -1);
+    waypoints.push(waypoint);
 
     var positionalRequest = {
       'locations': [event.latLng]
@@ -98,14 +84,22 @@ function initialize() {
 
     elevationService.getElevationForLocations(positionalRequest, function(results, status) {
       if (status == google.maps.ElevationStatus.OK && results[0]) {
-          elevation = document.getElementById("elevation" + poly.getPath().length);
-          elevation.innerHTML = results[0].elevation;
+          waypoints[poly.getPath().length - 1].altitude = results[0].elevation;
       }
     });
-
   } 
 }
 
+
+function buildWaypoint (latitude, longitude, altitude) {
+    var waypoint = { 
+      "latitude" : latitude,
+      "longitude" : longitude,
+      "altitude" : -1
+    }
+
+    return waypoint;
+}
 
 // Sets the map on all markers in the array.
 function setAllMap(map) {
@@ -129,6 +123,23 @@ function showMarkers() {
 function deleteMarkers() {
   clearMarkers();
   markers = [];
+  clearJSON;
+}
+
+function showJSON() {
+    points = document.getElementById("points");
+    points.innerHTML = buildJSON();
+}
+
+function buildJSON() {
+    return JSON.stringify(waypoints);
+}
+
+function exportJSON() {
+   window.open('data:text/json;charset=utf-8,' + escape(buildJSON()));
+}
+
+function clearJSON() {
   points = document.getElementById("points");
   points.innerHTML = "";
 }
@@ -141,9 +152,12 @@ google.maps.event.addDomListener(window, 'load', initialize);
     <div id="points">
     </div>
     <div id="panel">
-      <input onclick="clearMarkers();" type=button value="Hide Markers">
-      <input onclick="showMarkers();" type=button value="Show All Markers">
-      <input onclick="deleteMarkers();" type=button value="Delete Markers">
+      <input onclick="clearMarkers();" type=button value="Hide Markers" />
+      <input onclick="showMarkers();" type=button value="Show All Markers" />
+      <input onclick="deleteMarkers();" type=button value="Delete Markers" />
+      <input onclick="showJSON();" type=button value="Show JSON" />
+      <input onclick="exportJSON();" type=button value="Export JSON" />
+      <input onclick="clearJSON();" type=button value="Clear JSON" />
     </div>
     <div id="map-canvas"></div>
     <p>Click on the map to add markers.</p>
